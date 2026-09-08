@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.testzombie</groupId>
+    <artifactId>testzombie-example-selenium-java</artifactId>
+    <version>1.0.0</version>
+    <name>TestZombie AI Selenium Demo Tests</name>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <selenium.version>[4.46.0, 5.0.0)</selenium.version>
+        <junit.version>5.13.4</junit.version>
+        <surefire.version>3.5.3</surefire.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.testzombie</groupId>
+            <artifactId>testzombie-lib-java</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <systemPropertyVariables>
+                        <baseUrl>${baseUrl}</baseUrl>
+                        <browser>${browser}</browser>
+                        <headless>${headless}</headless>
+                        <testzombie.apikey>${testzombie.apikey}</testzombie.apikey>
+                        <testzombie.email>${testzombie.email}</testzombie.email>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>defaults</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <baseUrl>http://demoweb2.testzombie.ai</baseUrl>
+                <browser>chrome</browser>
+                <headless>false</headless>
+                <testzombie.apikey></testzombie.apikey>
+                <testzombie.email></testzombie.email>
+            </properties>
+        </profile>
+    </profiles>
+</project>
