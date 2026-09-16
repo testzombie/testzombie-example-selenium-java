@@ -50,6 +50,7 @@ public class SeleniumActions {
             try {
                 WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
                 element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                scrollIntoView(element);
                 element.click();
 
                 DemoLogger.pass("Clicked: " + locator);
@@ -69,6 +70,7 @@ public class SeleniumActions {
     public void type(By locator, String value) {
         DemoLogger.action("Type", locator, value);
         WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        scrollIntoView(field);
         field.clear();
         field.sendKeys(value);
         DemoLogger.pass("Value entered: " + locator);
@@ -77,6 +79,7 @@ public class SeleniumActions {
     public void selectByText(By locator, String text) {
         DemoLogger.action("Select text", locator, text);
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        scrollIntoView(element);
         new Select(element).selectByVisibleText(text);
         DemoLogger.pass("Selected text '" + text + "': " + locator);
     }
@@ -84,6 +87,7 @@ public class SeleniumActions {
     public void selectByValue(By locator, String value) {
         DemoLogger.action("Select value", locator, value);
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        scrollIntoView(element);
         new Select(element).selectByValue(value);
         DemoLogger.pass("Selected value '" + value + "': " + locator);
     }
@@ -108,5 +112,20 @@ public class SeleniumActions {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Interrupted while stabilizing Selenium interaction", ex);
         }
+    }
+
+    private void scrollIntoView(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript("""
+                arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});
+                """, element);
+
+        wait.until(webDriver -> Boolean.TRUE.equals(((JavascriptExecutor) webDriver).executeScript("""
+                const element = arguments[0];
+                const rect = element.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+                return rect.top >= 0 && rect.left >= 0
+                    && rect.bottom <= viewportHeight && rect.right <= viewportWidth;
+                """, element)));
     }
 }
