@@ -73,6 +73,89 @@ mvn test \
 
 ---
 
+## 2.1 Source code update mode
+
+TestZombie can optionally write successfully healed locators back into the Java source code of the consuming test project.
+
+This feature is disabled by default.
+
+### Configure in Java
+
+```java
+import com.testzombie.driver.SourceUpdateMode;
+import com.testzombie.driver.TestZombieDriver;
+
+TestZombieDriver.setSourceUpdateMode(SourceUpdateMode.PREVIEW);
+```
+
+Available modes:
+
+| Mode | Behavior |
+| --- | --- |
+| `OFF` | No source-code scanning or modification. |
+| `PREVIEW` | Finds matching source locations and logs the planned changes without writing files. |
+| `APPLY` | Writes the healed locator into the source code. The previous source line is retained as a comment directly above the new line. |
+
+Example:
+
+```java
+driver.findElement(By.id("old-login"));
+```
+
+After a successful healing to XPath in `APPLY` mode:
+
+```java
+// driver.findElement(By.id("old-login"));
+driver.findElement(By.xpath("//button[@data-testid='login']"));
+```
+
+Only **successfully verified healings** are eligible for source-code updates. A failed healing does not modify source files.
+
+### Configure with an environment variable
+
+Instead of configuring the mode in Java, set:
+
+```bash
+TESTZOMBIE_SOURCE_UPDATE_MODE=preview
+```
+
+Supported values are:
+
+```text
+off
+preview
+apply
+```
+
+Example on Linux:
+
+```bash
+export TESTZOMBIE_SOURCE_UPDATE_MODE=apply
+```
+
+### Configuration priority
+
+If a source update mode is explicitly set in Java, it has precedence over the environment variable:
+
+```text
+1. TestZombieDriver.setSourceUpdateMode(...)
+2. TESTZOMBIE_SOURCE_UPDATE_MODE
+3. OFF
+```
+
+For example, this explicitly disables source updates even when the environment variable contains `apply`:
+
+```java
+TestZombieDriver.setSourceUpdateMode(SourceUpdateMode.OFF);
+```
+
+To remove the Java override and use the environment variable again:
+
+```java
+TestZombieDriver.clearSourceUpdateMode();
+```
+---
+
 ## 3. Voraussetzungen
 
 Du benötigst:
