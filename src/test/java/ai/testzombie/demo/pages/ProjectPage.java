@@ -65,20 +65,9 @@ public class ProjectPage extends BasePage {
         return new CheckoutPage(driver);
     }
 
-    public void AICall(String findstring) {
-        System.out.println("AI Healing Versuch");
-        //WebElement webElement=driver.findElement(By.xpath("Confirm Critical Action"));
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        click(By.xpath(findstring));
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+    /** Optional acceptance probe: intentionally uses plain text as an XPath request. */
+    public void aiCall(String findString) {
+        DemoLogger.step("Forced AI-Healing: " + findString);
+        click(By.xpath(findString));
     }
 }

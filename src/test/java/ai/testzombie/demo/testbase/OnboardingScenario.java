@@ -1,31 +1,38 @@
-package ai.testzombie.demo.tests;
+package ai.testzombie.demo.testbase;
 
 import ai.testzombie.demo.pages.AdminPage;
 import ai.testzombie.demo.pages.CheckoutPage;
 import ai.testzombie.demo.pages.ProjectPage;
 import ai.testzombie.demo.support.DemoLogger;
 import ai.testzombie.demo.support.MutationLevel;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WebDriver;
+
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OnboardingFlowTest extends BaseSeleniumTest {
+/** Shared business flow: the three feature demos run identical Selenium actions. */
+public final class OnboardingScenario {
+    private OnboardingScenario() {}
 
-    @ParameterizedTest(name = "Complete onboarding at mutation level {0}")
-    @EnumSource(MutationLevel.class)
-    void completeOnboardingOnEveryMutationLevel(MutationLevel level) {
-        DemoLogger.info("SCENARIO", "Vollständiges Workspace-Onboarding");
+    static void run(WebDriver driver, MutationLevel level, String scenario) {
+        // Backwards-compatible default for legacy generated/step tests.
+        String email = "qa+" + scenario.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-")
+                + "@testzombie.ai";
+        run(driver, level, scenario, email, scenario + " Workspace");
+    }
+
+    public static void run(WebDriver driver, MutationLevel level, String scenario,
+                    String ownerEmail, String workspaceName) {
+        DemoLogger.info("SCENARIO", scenario);
         DemoLogger.info("MUTATION", level);
 
         ProjectPage project = new ProjectPage(driver).open();
         project.disableRandomOverlay();
         project.setMutationLevel(level);
-        project.enterOwner("qa+" + level.name().toLowerCase() + "@testzombie.ai", "QA Engineer")
-               .chooseProjectType("Web");
+        project.enterOwner(ownerEmail, "QA Engineer")
+                .chooseProjectType("Web");
 
         CheckoutPage checkout = project.continueToPlan();
         int checkoutLevel = checkout.persistedMutationLevel();
@@ -42,23 +49,11 @@ class OnboardingFlowTest extends BaseSeleniumTest {
         assertEquals(level.value(), adminLevel, "Mutation level must survive all pages");
         DemoLogger.pass("Mutation Level auf Konfigurationsseite verifiziert");
 
-        admin.configureWorkspace("Mutation " + level.value() + " Workspace")
-             .activateWorkspace();
-
+        admin.configureWorkspace(workspaceName).activateWorkspace();
         String title = admin.completionTitle();
-        DemoLogger.verify("Abschlussdialog bestätigt erfolgreiches Onboarding",
-                "contains: Workspace successfully created", title);
-        assertTrue(title.contains("Workspace successfully created"));
+        DemoLogger.verify("Abschlussdialog", "contains: Workspace successfully created", title);
+        assertTrue(title.contains("Workspace successfully created"), "Onboarding must succeed");
         DemoLogger.pass("Onboarding erfolgreich abgeschlossen");
-
         admin.closeCompletionDialog();
-
-        //AI Healing Demo with plain Text as locator
-        if(level==MutationLevel.EXTREME) {
-            System.out.println("TestZombieAI -> forced AI Call -needed active Subscription or TopUp");
-            System.out.println("TestZombieAI -> find element over plain text as locator, triggers AI Call");
-            driver.get("http://demoweb2.testzombie.ai/index.html");
-            project.AICall("Confirm Critical Action");
-        }
     }
 }

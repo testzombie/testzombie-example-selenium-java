@@ -10,9 +10,9 @@ public class CheckoutPage extends BasePage {
     private static final By PLAN_STARTER = By.cssSelector("button[data-plan='Starter']");
     private static final By PLAN_PROFESSIONAL = By.cssSelector("button[data-plan='Professional']");
     private static final By PLAN_ENTERPRISE = By.cssSelector("button[data-plan='Enterprise']");
-    private static final By COMPANY = By.cssSelector("input[data-testid='company-input']");
-    private static final By PAYMENT_METHOD = By.cssSelector("select[data-testid='payment-method']");
-    private static final By ACCEPT_TERMS = By.cssSelector("input[data-testid='terms-check']");
+       private static final By COMPANY = By.cssSelector("input[data-testid='company-input']");
+       private static final By PAYMENT_METHOD = By.cssSelector("select[data-testid='payment-method']");
+       private static final By ACCEPT_TERMS = By.cssSelector("input[data-testid='terms-check']");
     private static final By SAVE_BILLING = By.id("payButton");
     private static final By CONTINUE_TO_CONFIGURATION = By.id("continueToAdmin");
 
